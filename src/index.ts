@@ -3,10 +3,39 @@ import globby from "globby";
 import yargs from "yargs";
 import ts from "typescript";
 import transformJsx from "typescript-transform-jsx";
-import { resolve } from "path";
+import { resolve, basename } from "path";
 
-function compile(fileNames: string[], options: ts.CompilerOptions): void {
-  let program = ts.createProgram(fileNames, options);
+function compileJs(code: string) {
+  return eval(code)();
+}
+
+function compile(
+  fileNames: string[],
+  options: { html: boolean; outDir?: string; rootDir?: string }
+): void {
+  let program = ts.createProgram(
+    fileNames,
+    {
+      outDir: options.outDir,
+      rootDir: options.rootDir,
+      target: ts.ScriptTarget.ESNext,
+      module: ts.ModuleKind.CommonJS,
+      jsx: ts.JsxEmit.ReactNative,
+      noEmitOnError: true,
+      noImplicitAny: true
+    },
+    {
+      ...ts.createCompilerHost({}),
+      writeFile(fileName, data) {
+        if (options.html)
+          ts.sys.writeFile(
+            basename(fileName, ".js") + ".html",
+            compileJs(data)
+          );
+        else ts.sys.writeFile(fileName, data);
+      }
+    }
+  );
   let emitResult = program.emit(undefined, undefined, undefined, undefined, {
     after: [transformJsx(program)]
   });
@@ -40,17 +69,10 @@ function compile(fileNames: string[], options: ts.CompilerOptions): void {
 }
 
 function main() {
-  const { _: patterns } = yargs.argv;
+  const { _: patterns, html } = yargs.boolean("html").argv;
   if (patterns.length === 0) return;
   const files = globby.sync([...patterns, resolve(__dirname, "../types.d.ts")]);
-
-  compile(files, {
-    target: ts.ScriptTarget.ESNext,
-    module: ts.ModuleKind.CommonJS,
-    jsx: ts.JsxEmit.Preserve,
-    noEmitOnError: true,
-    noImplicitAny: true
-  });
+  compile(files, { html: !!html });
 }
 
 try {
