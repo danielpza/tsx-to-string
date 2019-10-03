@@ -11,7 +11,12 @@ function compileJs(code: string) {
 
 function compile(
   fileNames: string[],
-  options: { html: boolean; outDir?: string; rootDir?: string }
+  options: {
+    html?: boolean;
+    stdout?: boolean;
+    outDir?: string;
+    rootDir?: string;
+  }
 ): void {
   let program = ts.createProgram(
     fileNames,
@@ -27,12 +32,11 @@ function compile(
     {
       ...ts.createCompilerHost({}),
       writeFile(fileName, data) {
-        if (options.html)
-          ts.sys.writeFile(
-            basename(fileName, ".js") + ".html",
-            compileJs(data)
-          );
-        else ts.sys.writeFile(fileName, data);
+        const content = options.html ? compileJs(data) : data;
+        if (options.stdout) process.stdout.write(content);
+        else if (options.html)
+          ts.sys.writeFile(basename(fileName, ".js") + ".html", content);
+        else ts.sys.writeFile(fileName, content);
       }
     }
   );
@@ -64,15 +68,17 @@ function compile(
   });
 
   let exitCode = emitResult.emitSkipped ? 1 : 0;
-  console.log(`Process exiting with code '${exitCode}'.`);
-  process.exit(exitCode);
+  if (exitCode > 0) {
+    console.log(`Process exiting with code '${exitCode}'.`);
+    process.exit(exitCode);
+  }
 }
 
 function main() {
-  const { _: patterns, html } = yargs.boolean("html").argv;
+  const { _: patterns, ...rest } = yargs.boolean("html").boolean("stdout").argv;
   if (patterns.length === 0) return;
   const files = globby.sync([...patterns, resolve(__dirname, "../types.d.ts")]);
-  compile(files, { html: !!html });
+  compile(files, rest);
 }
 
 try {
