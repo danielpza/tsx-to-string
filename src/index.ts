@@ -18,11 +18,12 @@ function compile(
     rootDir?: string;
   }
 ): void {
+  const { html, stdout, rootDir, outDir } = options;
   let program = ts.createProgram(
     fileNames,
     {
-      outDir: options.outDir,
-      rootDir: options.rootDir,
+      outDir,
+      rootDir,
       target: ts.ScriptTarget.ESNext,
       module: ts.ModuleKind.CommonJS,
       jsx: ts.JsxEmit.ReactNative,
@@ -32,9 +33,9 @@ function compile(
     {
       ...ts.createCompilerHost({}),
       writeFile(fileName, data) {
-        const content = options.html ? compileJs(data) : data;
-        if (options.stdout) process.stdout.write(content);
-        else if (options.html)
+        const content = html ? compileJs(data) : data;
+        if (stdout) process.stdout.write(content);
+        else if (html)
           ts.sys.writeFile(basename(fileName, ".js") + ".html", content);
         else ts.sys.writeFile(fileName, content);
       }
