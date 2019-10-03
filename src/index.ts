@@ -1,15 +1,12 @@
-#!/usr/bin/env node
-import globby from "globby";
-import yargs from "yargs";
 import ts from "typescript";
 import transformJsx from "typescript-transform-jsx";
-import { resolve, basename } from "path";
+import { basename } from "path";
 
 function compileJs(code: string) {
   return eval(code)();
 }
 
-function compile(
+export function compile(
   fileNames: string[],
   options: {
     html: boolean;
@@ -18,7 +15,7 @@ function compile(
     outDir?: string;
     rootDir?: string;
   }
-): void {
+) {
   const { html, stdout, rootDir, outDir, strict } = options;
   let program = ts.createProgram(
     fileNames,
@@ -49,65 +46,5 @@ function compile(
     .getPreEmitDiagnostics(program)
     .concat(emitResult.diagnostics);
 
-  allDiagnostics.forEach(diagnostic => {
-    if (diagnostic.file) {
-      let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(
-        diagnostic.start!
-      );
-      let message = ts.flattenDiagnosticMessageText(
-        diagnostic.messageText,
-        "\n"
-      );
-      console.log(
-        `${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`
-      );
-    } else {
-      console.log(
-        `${ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n")}`
-      );
-    }
-  });
-
-  let exitCode = emitResult.emitSkipped ? 1 : 0;
-  if (exitCode > 0) {
-    console.log(`Process exiting with code '${exitCode}'.`);
-    process.exit(exitCode);
-  }
-}
-
-function main() {
-  const { _: patterns, ...options } = yargs
-    .usage("Usage: $0 <files glob pattern> [options]")
-    .option("rootDir", {
-      string: true,
-      description: "Same as in tsconfig.json"
-    })
-    .option("outDir", { string: true, description: "Same as in tsconfig.json" })
-    .option("strict", {
-      boolean: true,
-      description: "Same as in tsconfig.json",
-      default: false
-    })
-    .option("html", {
-      boolean: true,
-      description: "Outputs html files",
-      default: false
-    })
-    .option("stdout", {
-      boolean: true,
-      description: "Outputs to stdout",
-      default: false
-    })
-    .version()
-    .help().argv;
-  if (patterns.length === 0) return;
-  const files = globby.sync([...patterns]);
-  compile(files, options);
-}
-
-try {
-  main();
-} catch (err) {
-  console.error(err);
-  process.exit(1);
+  return { allDiagnostics, emitResult };
 }

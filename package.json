@@ -2,7 +2,8 @@
   "name": "tsx-to-string",
   "version": "0.1.0",
   "description": "Use tsx files as templates for your html!",
-  "bin": "lib/index.js",
+  "bin": "lib/cli.js",
+  "main": "lib/index.js",
   "files": [
     "lib",
     "types.d.ts"
@@ -31,10 +32,10 @@
   "devDependencies": {
     "@types/node": "^12.7.9",
     "@types/yargs": "^13.0.3",
-    "globby": "^10.0.1",
     "typescript": "^3.6.3"
   },
   "dependencies": {
+    "globby": "^10.0.1",
     "typescript-transform-jsx": "^1.5.0",
     "yargs": "^14.0.0"
   }
