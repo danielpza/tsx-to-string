@@ -10,7 +10,13 @@ Use tsx files as templates for your html!.
 ## Install
 
 ```sh
-npm i -g tsx-to-string typescript
+npm install --global tsx-to-string typescript
+```
+
+or from github
+
+``` fish
+npm install --global danielpza/tsx-to-string
 ```
 
 ## Usage

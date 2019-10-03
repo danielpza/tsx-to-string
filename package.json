@@ -13,7 +13,16 @@
     "prepare": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["typescript", "template", "jsx", "tsx", "transform", "typesafe", "html", "string"],
+  "keywords": [
+    "typescript",
+    "template",
+    "jsx",
+    "tsx",
+    "transform",
+    "typesafe",
+    "html",
+    "string"
+  ],
   "author": "Daniel Perez Alvarez <danielpza@protonmail.com> (https://github.com/danielpza)",
   "license": "MIT",
   "peerDependencies": {
