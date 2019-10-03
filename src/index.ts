@@ -12,13 +12,14 @@ function compileJs(code: string) {
 function compile(
   fileNames: string[],
   options: {
-    html?: boolean;
-    stdout?: boolean;
+    html: boolean;
+    stdout: boolean;
+    strict: boolean;
     outDir?: string;
     rootDir?: string;
   }
 ): void {
-  const { html, stdout, rootDir, outDir } = options;
+  const { html, stdout, rootDir, outDir, strict } = options;
   let program = ts.createProgram(
     fileNames,
     {
@@ -27,8 +28,7 @@ function compile(
       target: ts.ScriptTarget.ESNext,
       module: ts.ModuleKind.CommonJS,
       jsx: ts.JsxEmit.ReactNative,
-      noEmitOnError: true,
-      noImplicitAny: true
+      strict
     },
     {
       ...ts.createCompilerHost({}),
@@ -76,20 +76,33 @@ function compile(
 }
 
 function main() {
-  const { _: patterns, ...rest } = yargs
+  const { _: patterns, ...options } = yargs
     .usage("Usage: $0 <files glob pattern> [options]")
     .option("rootDir", {
       string: true,
-      description: "same as in tsconfig.json"
+      description: "Same as in tsconfig.json"
     })
-    .option("outDir", { string: true, description: "same as in tsconfig.json" })
-    .option("html", { boolean: true, description: "Outputs html files" })
-    .option("stdout", { boolean: true, description: "Outputs to stdout" })
+    .option("outDir", { string: true, description: "Same as in tsconfig.json" })
+    .option("strict", {
+      boolean: true,
+      description: "Same as in tsconfig.json",
+      default: false
+    })
+    .option("html", {
+      boolean: true,
+      description: "Outputs html files",
+      default: false
+    })
+    .option("stdout", {
+      boolean: true,
+      description: "Outputs to stdout",
+      default: false
+    })
     .version()
     .help().argv;
   if (patterns.length === 0) return;
-  const files = globby.sync([...patterns, resolve(__dirname, "../types.d.ts")]);
-  compile(files, rest);
+  const files = globby.sync([...patterns]);
+  compile(files, options);
 }
 
 try {

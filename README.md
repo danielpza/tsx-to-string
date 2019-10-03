@@ -25,10 +25,11 @@ npm install --global danielpza/tsx-to-string
 Usage: tsx-to-string <files glob pattern> [options]
 
 Options:
-  --rootDir  same as in tsconfig.json                                   [string]
-  --outDir   same as in tsconfig.json                                   [string]
-  --html     Outputs html files                                        [boolean]
-  --stdout   Outputs to stdout                                         [boolean]
+  --rootDir  Same as in tsconfig.json                                   [string]
+  --outDir   Same as in tsconfig.json                                   [string]
+  --strict   Same as in tsconfig.json                 [boolean] [default: false]
+  --html     Outputs html files                       [boolean] [default: false]
+  --stdout   Outputs to stdout                        [boolean] [default: false]
   --version  Show version number                                       [boolean]
   --help     Show help                                                 [boolean]
 ```
