@@ -1,0 +1,29 @@
+{
+  "name": "tsx-to-string",
+  "version": "0.1.0",
+  "description": "",
+  "bin": "lib/index.js",
+  "files": ["lib", "types.d.ts"],
+  "scripts": {
+    "prebuild": "rm -fr lib",
+    "build": "tsc",
+    "prepare": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Daniel Perez Alvarez <danielpza@protonmail.com> (https://github.com/danielpza)",
+  "license": "MIT",
+  "peerDependencies": {
+    "typescript": "3.x"
+  },
+  "devDependencies": {
+    "@types/node": "^12.7.9",
+    "@types/yargs": "^13.0.3",
+    "globby": "^10.0.1",
+    "typescript": "^3.6.3"
+  },
+  "dependencies": {
+    "typescript-transform-jsx": "^1.5.0",
+    "yargs": "^14.0.0"
+  }
+}
