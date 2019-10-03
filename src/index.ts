@@ -76,7 +76,17 @@ function compile(
 }
 
 function main() {
-  const { _: patterns, ...rest } = yargs.boolean("html").boolean("stdout").argv;
+  const { _: patterns, ...rest } = yargs
+    .usage("Usage: $0 <files glob pattern> [options]")
+    .option("rootDir", {
+      string: true,
+      description: "same as in tsconfig.json"
+    })
+    .option("outDir", { string: true, description: "same as in tsconfig.json" })
+    .option("html", { boolean: true, description: "Outputs html files" })
+    .option("stdout", { boolean: true, description: "Outputs to stdout" })
+    .version()
+    .help().argv;
   if (patterns.length === 0) return;
   const files = globby.sync([...patterns, resolve(__dirname, "../types.d.ts")]);
   compile(files, rest);
